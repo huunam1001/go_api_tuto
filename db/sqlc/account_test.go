@@ -1,6 +1,7 @@
 package db
 
 import (
+	"BankTuto/util"
 	"context"
 	"testing"
 
@@ -10,9 +11,9 @@ import (
 func TestCreateAccount(t *testing.T) {
 
 	agr := CreateAccountParams{
-		Owner:    "Van Long",
-		Currency: "USD",
-		Balance:  100,
+		Owner:    util.RandomOwnerName(),
+		Currency: util.RandomCurrency(),
+		Balance:  util.RandomBalance(),
 	}
 
 	account, err := testQueries.CreateAccount(context.Background(), agr)
