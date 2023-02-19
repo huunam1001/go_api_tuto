@@ -34,6 +34,7 @@ func (server *Server) Start(addres string) error {
 
 func Log() {
 	////
+	////
 }
 
 func errorResponse(e error) gin.H {
