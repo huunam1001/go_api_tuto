@@ -7,5 +7,3 @@ migratedown:
 
 
 .PHONY: migrateup, migratedown
-
-
