@@ -31,12 +31,3 @@ func (server *Server) Start(addres string) error {
 
 	return server.router.Run(addres)
 }
-
-func Log() {
-	////
-	////
-}
-
-func errorResponse(e error) gin.H {
-	return gin.H{"Error": e.Error()}
-}
