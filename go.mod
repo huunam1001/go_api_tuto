@@ -1,6 +1,6 @@
 module go_api_tuto
 
-go 1.19
+go 1.20
 
 require (
 	github.com/gin-gonic/gin v1.8.2
