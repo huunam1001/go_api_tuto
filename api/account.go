@@ -19,7 +19,7 @@ func (server *Server) CreateAccount(ctx *gin.Context) {
 
 	if err := ctx.ShouldBindJSON(&req); err != nil {
 
-		ctx.JSON(http.StatusOK, util.SendApiError(http.StatusBadRequest, "Data validation"))
+		util.SendApiError(ctx, http.StatusBadRequest, "Data validation")
 
 		return
 	}
@@ -33,10 +33,10 @@ func (server *Server) CreateAccount(ctx *gin.Context) {
 	account, err := server.store.CreateAccount(ctx, arg)
 
 	if err != nil {
-		ctx.JSON(http.StatusOK, util.SendApiError(http.StatusInternalServerError, "Internal server error"))
+		util.SendApiError(ctx, http.StatusInternalServerError, "Internal server error")
 
 		return
 	}
 
-	ctx.JSON(http.StatusOK, util.SendApiSuccess(account, ""))
+	util.SendApiSuccess(ctx, account, "")
 }
