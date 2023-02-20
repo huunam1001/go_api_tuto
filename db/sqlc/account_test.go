@@ -1,8 +1,8 @@
 package db
 
 import (
-	"BankTuto/util"
 	"context"
+	"go_api_tuto/util"
 	"testing"
 
 	"github.com/stretchr/testify/require"

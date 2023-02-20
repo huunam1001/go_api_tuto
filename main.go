@@ -1,9 +1,9 @@
 package main
 
 import (
-	"BankTuto/api"
-	db "BankTuto/db/sqlc"
 	"database/sql"
+	"go_api_tuto/api"
+	db "go_api_tuto/db/sqlc"
 
 	_ "github.com/lib/pq"
 

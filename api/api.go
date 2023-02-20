@@ -1,7 +1,7 @@
 package api
 
 import (
-	db "BankTuto/db/sqlc"
+	db "go_api_tuto/db/sqlc"
 
 	"github.com/gin-gonic/gin"
 )
