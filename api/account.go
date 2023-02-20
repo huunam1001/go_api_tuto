@@ -2,6 +2,7 @@ package api
 
 import (
 	db "go_api_tuto/db/sqlc"
+	"go_api_tuto/util"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -18,7 +19,7 @@ func (server *Server) CreateAccount(ctx *gin.Context) {
 
 	if err := ctx.ShouldBindJSON(&req); err != nil {
 
-		ctx.JSON(http.StatusBadRequest, errorResponse(err))
+		ctx.JSON(http.StatusOK, util.SendApiError(http.StatusBadRequest, "Data validation"))
 
 		return
 	}
@@ -32,10 +33,10 @@ func (server *Server) CreateAccount(ctx *gin.Context) {
 	account, err := server.store.CreateAccount(ctx, arg)
 
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
+		ctx.JSON(http.StatusOK, util.SendApiError(http.StatusInternalServerError, "Internal server error"))
 
 		return
 	}
 
-	ctx.JSON(http.StatusOK, account)
+	ctx.JSON(http.StatusOK, util.SendApiSuccess(account, ""))
 }
