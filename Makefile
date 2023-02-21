@@ -1,6 +1,9 @@
 tidy:
 	go mod tidy
 
+run:
+	go run main.go
+
 migrateup:
 	migrate -path db/migration -database "postgresql://root:pass123@localhost:5432/simple_bank?sslmode=disable" -verbose up
 
@@ -13,4 +16,4 @@ sqlc:
 test:
 	go test -v -cover ./...
 
-.PHONY: migrateup, migratedown, sqlc, test, tidy
+.PHONY: migrateup, migratedown, sqlc, test, tidy, run

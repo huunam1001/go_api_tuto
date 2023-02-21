@@ -2,6 +2,7 @@ package db
 
 import (
 	"database/sql"
+	"go_api_tuto/util"
 	"log"
 	"os"
 	"testing"
@@ -9,16 +10,18 @@ import (
 	_ "github.com/lib/pq"
 )
 
-const (
-	driver   = "postgres"
-	dbSource = "postgresql://root:pass123@localhost:5432/simple_bank?sslmode=disable"
-)
-
 var testQueries *Queries
 
 func TestMain(m *testing.M) {
 
-	conn, err := sql.Open(driver, dbSource)
+	config, err := util.LoadConfig("../..")
+
+	if err != nil {
+		log.Fatal("Could not load system config: ,", err)
+		return
+	}
+
+	conn, err := sql.Open(config.DbDriver, config.DbSource)
 
 	if err != nil {
 		log.Fatal("Could not open database: ,", err)
