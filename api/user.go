@@ -119,8 +119,8 @@ func (server *Server) UserLogin(ctx *gin.Context) {
 
 	util.SendApiSuccess(ctx, reponseMap, "")
 
-	apiMongoDb := server.mongo.Database("demo_api")
-	tokenCollection := apiMongoDb.Collection("login_token")
+	apiMongoDb := server.mongo.Database(util.MONGO_DATA_BASE)
+	tokenCollection := apiMongoDb.Collection(util.MONGO_TOKEN_COLLECTION)
 
 	result, err := tokenCollection.InsertOne(ctx, reponseMap)
 
