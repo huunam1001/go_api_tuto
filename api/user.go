@@ -101,12 +101,26 @@ func (server *Server) UserLogin(ctx *gin.Context) {
 		return
 	}
 
-	token, err := util.GenerateJWT(user)
+	userMap := make(map[string]string)
+	userMap["username"] = user.Username
+	userMap["fullName"] = user.FullName
+	userMap["email"] = user.Email
+
+	token, err := util.GenerateJWT(userMap)
 
 	if err != nil || len(token) == 0 {
 
 		util.SendInternalServerError(ctx)
 	}
 
-	util.SendApiSuccess(ctx, token, "")
+	reponseMap := make(map[string]any)
+	reponseMap["user"] = userMap
+	reponseMap["token"] = token
+
+	util.SendApiSuccess(ctx, reponseMap, "")
+}
+
+func (server *Server) GetMe(ctx *gin.Context) {
+
+	util.SendValidationError(ctx)
 }
