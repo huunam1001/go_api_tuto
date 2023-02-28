@@ -24,18 +24,13 @@ func (server *Server) CreateAccount(ctx *gin.Context) {
 		return
 	}
 
-	println("XXXXXX")
 	arg := db.CreateAccountParams{
 		Owner:    req.Owner,
 		Currency: req.Currency,
 		Balance:  0,
 	}
 
-	println("YYYYY")
-
 	account, err := server.store.CreateAccount(ctx, arg)
-
-	println("ZZZZ")
 
 	if err != nil {
 		util.SendApiError(ctx, http.StatusInternalServerError, "Internal server error")
