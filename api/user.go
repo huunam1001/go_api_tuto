@@ -25,6 +25,26 @@ func (server *Server) UserLogin(ctx *gin.Context) {
 		return
 	}
 
+	getArr := db.GetListUserWithAccountOrEmailParams{
+		Username: req.Username,
+		Email:    req.Email,
+	}
+
+	users, err := server.store.GetListUserWithAccountOrEmail(ctx, getArr)
+
+	if err != nil {
+		util.SendInternalServerError(ctx)
+
+		return
+	}
+
+	if len(users) > 0 {
+
+		util.SendApiError(ctx, util.ACCOUNT_REGITERED, "Username or email was registered already")
+
+		return
+	}
+
 	arg := db.CreateUserParams{
 		Username:       req.Username,
 		HashedPassword: req.Password,

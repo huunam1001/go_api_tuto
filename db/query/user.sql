@@ -12,3 +12,7 @@ INSERT INTO users (
 ) VALUES (
   $1, $2, $3, $4
 ) RETURNING *;
+
+-- name: GetListUserWithAccountOrEmail :many
+SELECT * FROM users
+WHERE username = $1 OR  email = $2;
