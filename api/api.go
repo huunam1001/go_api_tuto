@@ -3,6 +3,8 @@ package api
 import (
 	db "go_api_tuto/db/sqlc"
 
+	"go_api_tuto/util"
+
 	"github.com/gin-gonic/gin"
 	"go.mongodb.org/mongo-driver/mongo"
 )
@@ -22,13 +24,13 @@ func NewServer(store db.Store, mongoDb *mongo.Client) Server {
 
 	router := gin.Default()
 
-	nonAuthGroup := router.Group("api/v1")
+	nonAuthGroup := router.Group(util.API_GROUPING)
 	{
 		nonAuthGroup.POST("/user/register", sever.UserRegister)
 		nonAuthGroup.POST("/user/login", sever.UserLogin)
 	}
 
-	authGroup := router.Group("api/v1")
+	authGroup := router.Group(util.API_GROUPING)
 	{
 		authGroup.POST("/account", sever.CreateAccount)
 		authGroup.GET("/user/me", sever.GetMe)

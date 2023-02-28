@@ -1,5 +1,9 @@
 package util
 
+const API_GROUP_NAME = "api"
+const API_VERSION = "v1"
+const API_GROUPING = API_GROUP_NAME + "/" + API_VERSION
+
 const TOKEN_SECRET_KEY = "systemToken@123"
 
 const MONGO_DATA_BASE = "demo_api"
