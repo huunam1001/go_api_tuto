@@ -23,6 +23,16 @@ func SendApiError(ctx *gin.Context, code int, message string) {
 	ctx.JSON(http.StatusOK, buildSendData(false, code, nil, message))
 }
 
+func SendValidationError(ctx *gin.Context) {
+
+	ctx.JSON(http.StatusOK, buildSendData(false, http.StatusBadRequest, nil, "Data validation"))
+}
+
+func SendInternalServerError(ctx *gin.Context) {
+
+	ctx.JSON(http.StatusOK, buildSendData(false, http.StatusInternalServerError, nil, "Internal server error"))
+}
+
 func buildSendData(success bool, code int, data any, message string) *ClientResponse {
 
 	return &ClientResponse{
