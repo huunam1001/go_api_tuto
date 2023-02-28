@@ -101,5 +101,12 @@ func (server *Server) UserLogin(ctx *gin.Context) {
 		return
 	}
 
-	util.SendApiSuccess(ctx, user, "")
+	token, err := util.GenerateJWT(user)
+
+	if err != nil || len(token) == 0 {
+
+		util.SendInternalServerError(ctx)
+	}
+
+	util.SendApiSuccess(ctx, token, "")
 }
