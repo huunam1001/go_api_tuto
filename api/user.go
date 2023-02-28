@@ -1,6 +1,8 @@
 package api
 
 import (
+	"database/sql"
+	"fmt"
 	db "go_api_tuto/db/sqlc"
 	"go_api_tuto/util"
 
@@ -14,7 +16,7 @@ type createUserRequest struct {
 	Email    string `json:"email" binding:"required"`
 }
 
-func (server *Server) UserLogin(ctx *gin.Context) {
+func (server *Server) UserRegister(ctx *gin.Context) {
 
 	var req createUserRequest
 
@@ -56,6 +58,45 @@ func (server *Server) UserLogin(ctx *gin.Context) {
 
 	if err != nil {
 		util.SendInternalServerError(ctx)
+
+		return
+	}
+
+	util.SendApiSuccess(ctx, user, "")
+}
+
+type loginRequest struct {
+	Username string `json:"username" binding:"required"`
+	Password string `json:"password" binding:"required"`
+}
+
+func (server *Server) UserLogin(ctx *gin.Context) {
+
+	var req loginRequest
+
+	if err := ctx.ShouldBindJSON(&req); err != nil {
+
+		util.SendValidationError(ctx)
+
+		return
+	}
+
+	arg := db.GetLoginUserParams{
+		Username:       req.Username,
+		Email:          req.Username,
+		HashedPassword: req.Password,
+	}
+
+	user, err := server.store.GetLoginUser(ctx, arg)
+
+	if err != nil {
+		fmt.Println(err.Error())
+
+		if err != sql.ErrNoRows {
+			util.SendInternalServerError(ctx)
+		} else {
+			util.SendApiError(ctx, util.ACCOUNT_NOT_FOUND, "Please check your account and password")
+		}
 
 		return
 	}

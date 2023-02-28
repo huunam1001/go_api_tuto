@@ -16,6 +16,7 @@ type Querier interface {
 	GetAccount(ctx context.Context, id int64) (Account, error)
 	GetAccountForUpdate(ctx context.Context, id int64) (Account, error)
 	GetListUserWithAccountOrEmail(ctx context.Context, arg GetListUserWithAccountOrEmailParams) ([]User, error)
+	GetLoginUser(ctx context.Context, arg GetLoginUserParams) (User, error)
 	GetUser(ctx context.Context, arg GetUserParams) (User, error)
 	ListAccounts(ctx context.Context, arg ListAccountsParams) ([]Account, error)
 	UpdateAccount(ctx context.Context, arg UpdateAccountParams) (Account, error)

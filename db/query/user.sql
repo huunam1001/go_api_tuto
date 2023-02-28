@@ -3,6 +3,10 @@
 SELECT * FROM users
 WHERE username = $1 AND hashed_password = $2;
 
+-- name: GetLoginUser :one
+SELECT * FROM users
+WHERE (username = $1 OR email = $2) AND hashed_password = $3;
+
 -- name: CreateUser :one
 INSERT INTO users (
   username,

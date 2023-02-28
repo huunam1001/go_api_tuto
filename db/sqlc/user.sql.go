@@ -86,6 +86,31 @@ func (q *Queries) GetListUserWithAccountOrEmail(ctx context.Context, arg GetList
 	return items, nil
 }
 
+const getLoginUser = `-- name: GetLoginUser :one
+SELECT username, hashed_password, full_name, email, password_changed_at, created_at FROM users
+WHERE (username = $1 OR email = $2) AND hashed_password = $3
+`
+
+type GetLoginUserParams struct {
+	Username       string `json:"username"`
+	Email          string `json:"email"`
+	HashedPassword string `json:"hashedPassword"`
+}
+
+func (q *Queries) GetLoginUser(ctx context.Context, arg GetLoginUserParams) (User, error) {
+	row := q.db.QueryRowContext(ctx, getLoginUser, arg.Username, arg.Email, arg.HashedPassword)
+	var i User
+	err := row.Scan(
+		&i.Username,
+		&i.HashedPassword,
+		&i.FullName,
+		&i.Email,
+		&i.PasswordChangedAt,
+		&i.CreatedAt,
+	)
+	return i, err
+}
+
 const getUser = `-- name: GetUser :one
 SELECT username, hashed_password, full_name, email, password_changed_at, created_at FROM users
 WHERE username = $1 AND hashed_password = $2

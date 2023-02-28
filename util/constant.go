@@ -1,3 +1,4 @@
 package util
 
 const ACCOUNT_REGITERED = 3000
+const ACCOUNT_NOT_FOUND = 3001
