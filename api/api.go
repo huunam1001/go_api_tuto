@@ -30,8 +30,10 @@ func NewServer(store db.Store, mongoDb *mongo.Client) Server {
 		nonAuthGroup.POST("/user/login", sever.UserLogin)
 	}
 
-	authGroup := router.Group(util.API_GROUPING)
+	authGroup := router.Group(util.API_GROUPING, util.HeaderCheck())
 	{
+		/// add middle ware here
+
 		authGroup.POST("/account", sever.CreateAccount)
 		authGroup.GET("/user/me", sever.GetMe)
 	}
