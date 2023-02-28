@@ -1,6 +1,8 @@
 package db
 
-import "database/sql"
+import (
+	"database/sql"
+)
 
 // Store defines all functions to execute db queries and transactions
 type Store interface {
@@ -12,6 +14,7 @@ type Store interface {
 // SQLStore provides all functions to execute SQL queries and transactions
 type SQLStore struct {
 	db *sql.DB
+
 	*Queries
 }
 

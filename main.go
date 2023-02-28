@@ -3,7 +3,6 @@ package main
 import (
 	"context"
 	"database/sql"
-	"fmt"
 	"go_api_tuto/api"
 	db "go_api_tuto/db/sqlc"
 	"go_api_tuto/util"
@@ -18,20 +17,28 @@ import (
 
 func main() {
 
-	client, err := mongo.NewClient(options.Client().ApplyURI("mongodb+srv://huunam1001:ninhhuunam@cluster0.kcqlk9o.mongodb.net/?retryWrites=true&w=majority"))
+	/// Connect mogo db
+	mongoClient, err := mongo.NewClient(options.Client().ApplyURI("mongodb+srv://huunam1001:ninhhuunam@cluster0.kcqlk9o.mongodb.net/?retryWrites=true&w=majority"))
 	if err != nil {
 		log.Fatal(err)
+		return
 	}
-	ctx, _ := context.WithTimeout(context.Background(), 10*time.Second)
-	err = client.Connect(ctx)
+	mongoCtx, _ := context.WithTimeout(context.Background(), 10*time.Second)
+	err = mongoClient.Connect(mongoCtx)
 	if err != nil {
-		fmt.Println("MongoDB FAIL")
 		log.Fatal(err)
-	} else {
-		fmt.Println("MongoDB connected")
+		return
 	}
-	defer client.Disconnect(ctx)
 
+	defer mongoClient.Disconnect(mongoCtx)
+
+	// err = mognoClient.Ping(mongoCtx, readpref.Primary())
+	// if err != nil {
+	// 	log.Fatal(err)
+	// 	return
+	// }
+
+	/// Load cofig
 	config, err := util.LoadConfig(".")
 
 	if err != nil {
@@ -39,16 +46,17 @@ func main() {
 		return
 	}
 
-	conn, err := sql.Open(config.DbDriver, config.DbSource)
+	/// connect postgresql
+	postgresql, err := sql.Open(config.DbDriver, config.DbSource)
 
 	if err != nil {
 		log.Fatal("Could not open database: ,", err)
 		return
 	}
 
-	store := db.NewStore(conn)
+	store := db.NewStore(postgresql)
 
-	server := api.NewServer(store)
+	server := api.NewServer(store, mongoClient)
 
 	errServer := server.Start(config.SeverAddress)
 

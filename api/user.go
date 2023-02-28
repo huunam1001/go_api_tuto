@@ -118,6 +118,17 @@ func (server *Server) UserLogin(ctx *gin.Context) {
 	reponseMap["token"] = token
 
 	util.SendApiSuccess(ctx, reponseMap, "")
+
+	apiMongoDb := server.mongo.Database("demo_api")
+	tokenCollection := apiMongoDb.Collection("login_token")
+
+	result, err := tokenCollection.InsertOne(ctx, reponseMap)
+
+	if err != nil {
+		fmt.Printf("Error: %s\n", err.Error())
+	} else {
+		fmt.Printf("DATA ID: %s\n", result.InsertedID)
+	}
 }
 
 func (server *Server) GetMe(ctx *gin.Context) {

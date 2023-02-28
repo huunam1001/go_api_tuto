@@ -4,17 +4,20 @@ import (
 	db "go_api_tuto/db/sqlc"
 
 	"github.com/gin-gonic/gin"
+	"go.mongodb.org/mongo-driver/mongo"
 )
 
 type Server struct {
 	store  db.Store
 	router *gin.Engine
+	mongo  *mongo.Client
 }
 
-func NewServer(store db.Store) Server {
+func NewServer(store db.Store, mongoDb *mongo.Client) Server {
 
 	sever := &Server{
 		store: store,
+		mongo: mongoDb,
 	}
 
 	router := gin.Default()
