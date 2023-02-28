@@ -22,10 +22,19 @@ func NewServer(store db.Store, mongoDb *mongo.Client) Server {
 
 	router := gin.Default()
 
-	router.POST("/account", sever.CreateAccount)
-	router.POST("/user/register", sever.UserRegister)
-	router.POST("/user/login", sever.UserLogin)
-	router.GET("/user/me", sever.GetMe)
+	nonAuthGroup := router.Group("api/v1")
+	{
+		nonAuthGroup.POST("/user/register", sever.UserRegister)
+		nonAuthGroup.POST("/user/login", sever.UserLogin)
+	}
+
+	authGroup := router.Group("api/v1")
+	{
+		authGroup.POST("/account", sever.CreateAccount)
+		authGroup.GET("/user/me", sever.GetMe)
+	}
+
+	// router.GET("/user/me", sever.GetMe)
 
 	sever.router = router
 
