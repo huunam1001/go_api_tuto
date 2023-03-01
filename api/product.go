@@ -10,6 +10,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
+	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 func (server *Server) GetListProduct(ctx *gin.Context) {
@@ -21,13 +22,22 @@ func (server *Server) GetListProduct(ctx *gin.Context) {
 
 	filter := bson.M{"name": bson.M{"$regex": search, "$options": "i"}}
 
-	cursor, err := productCollection.Find(context.TODO(), filter)
+	options := new(options.FindOptions)
+	options.SetSkip(0)
+	options.SetLimit(1)
+
+	total, _ := productCollection.CountDocuments(context.TODO(), filter)
+
+	cursor, err := productCollection.Find(context.TODO(), filter, options)
 
 	var results []mongo.Product
 	if err = cursor.All(context.TODO(), &results); err != nil {
 		util.SendInternalServerError(ctx)
 		return
 	}
+
+	println("PAGE COUNT")
+	println(total)
 
 	for _, result := range results {
 		cursor.Decode(&result)
