@@ -67,7 +67,7 @@ func HeaderCheck() gin.HandlerFunc {
 	}
 }
 
-func GetUserFromRequest(c *gin.Context) *LoginData {
+func GetUserFromRequest(c *gin.Context) (*LoginData, bool) {
 
 	userName := c.Request.Header.Get("username")
 	email := c.Request.Header.Get("email")
@@ -79,8 +79,8 @@ func GetUserFromRequest(c *gin.Context) *LoginData {
 			Username: userName,
 			Email:    email,
 			FullName: fullName,
-		}
+		}, true
 	} else {
-		return nil
+		return nil, false
 	}
 }

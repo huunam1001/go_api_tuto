@@ -119,6 +119,7 @@ func (server *Server) UserLogin(ctx *gin.Context) {
 
 	util.SendApiSuccess(ctx, reponseMap, "")
 
+	/// insert data to mongo atlas
 	apiMongoDb := server.mongo.Database(util.MONGO_DATA_BASE)
 	tokenCollection := apiMongoDb.Collection(util.MONGO_TOKEN_COLLECTION)
 
