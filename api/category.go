@@ -9,13 +9,13 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
-type createRequest struct {
+type createCategoryRequest struct {
 	Name string `json:"name" binding:"required"`
 }
 
 func (server *Server) AddCategory(ctx *gin.Context) {
 
-	var req createRequest
+	var req createCategoryRequest
 
 	if err := ctx.ShouldBindJSON(&req); err != nil {
 
