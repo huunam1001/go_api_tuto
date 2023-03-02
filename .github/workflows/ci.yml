@@ -47,8 +47,8 @@ jobs:
       - name: Database migration
         run: make migrateup
 
-      - name: tidy
-        run: make tidy
+      # - name: tidy
+      #   run: make tidy
 
       - name: Test
         run: make test
