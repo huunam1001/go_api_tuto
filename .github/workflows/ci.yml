@@ -47,11 +47,15 @@ jobs:
       - name: Database migration
         run: make migrateup
 
+      - name: install go link
+        run: |
+          curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $(go env GOPATH)/bin
+
       # - name: tidy
       #   run: make tidy
 
-      - name: Build
-        run: go build -v ./...
+      # - name: Build
+      #   run: go build -v ./...
 
       - name: Test
         run: make test
