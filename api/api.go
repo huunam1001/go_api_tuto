@@ -38,6 +38,7 @@ func NewServer(store db.Store, mongoDb *mongo.Client) Server {
 		authGroup.GET("/user/me", sever.GetMe)
 
 		authGroup.POST("/category/create", sever.AddCategory)
+		authGroup.POST("/category/update", sever.UpdateCategory)
 
 		authGroup.GET("/product/get_list", sever.GetListProduct)
 		authGroup.POST("/product/create", sever.AddProduct)
