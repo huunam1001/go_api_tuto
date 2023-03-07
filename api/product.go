@@ -24,7 +24,7 @@ func (server *Server) GetListProduct(ctx *gin.Context) {
 
 	options := new(options.FindOptions)
 	options.SetSkip(0)
-	options.SetLimit(1)
+	options.SetLimit(10)
 
 	total, _ := productCollection.CountDocuments(context.TODO(), filter)
 
