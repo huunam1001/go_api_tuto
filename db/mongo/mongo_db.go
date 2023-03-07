@@ -9,8 +9,8 @@ type Category struct {
 	UpdatedTime primitive.DateTime `bson:"updatedTime,omitempty" json:"updatedTime"`
 	CreatedBy   string             `bson:"createdBy,omitempty" json:"createdBy"`
 	UpdatedBy   string             `bson:"updatedBy,omitempty" json:"updatedBy"`
-	IsDeleted   bool               `bson:"isDeleted,omitempty" json:"isDeleted"`
-	DeletedBy   string             `bson:"deletedBy,omitempty" json:"deletedBy"`
+	IsDeleted   bool               `bson:"isDeleted" json:"isDeleted"`
+	DeletedBy   string             `bson:"deletedBy" json:"deletedBy"`
 }
 
 type Product struct {
@@ -22,6 +22,6 @@ type Product struct {
 	UpdatedTime primitive.DateTime `bson:"updatedTime,omitempty" json:"updatedTime"`
 	CreatedBy   string             `bson:"createdBy,omitempty" json:"createdBy"`
 	UpdatedBy   string             `bson:"updatedBy,omitempty" json:"updatedBy"`
-	IsDeleted   bool               `bson:"isDeleted,omitempty" json:"isDeleted"`
-	DeletedBy   string             `bson:"deletedBy,omitempty" json:"deletedBy"`
+	IsDeleted   bool               `bson:"isDeleted" json:"isDeleted"`
+	DeletedBy   string             `bson:"deletedBy" json:"deletedBy"`
 }
