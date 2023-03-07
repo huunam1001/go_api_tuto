@@ -2,6 +2,7 @@ package api
 
 import (
 	"context"
+	"fmt"
 	"go_api_tuto/db/mongo"
 	"go_api_tuto/util"
 	"time"
@@ -79,20 +80,32 @@ func (server *Server) UpdateCategory(ctx *gin.Context) {
 		return
 	}
 
+	categoryId, err := primitive.ObjectIDFromHex(req.Id)
+
+	if err != nil {
+		util.SendInternalServerError(ctx)
+		return
+	}
+
+	filter := bson.M{"_id": bson.M{"$eq": categoryId}}
+
 	category := mongo.Category{
 		Name:        req.Name,
 		UpdatedTime: primitive.NewDateTimeFromTime(time.Now()),
 		UpdatedBy:   me.Username,
 	}
 
+	update := bson.M{"$set": category}
+
 	/// update data to mongo atlas
 	apiMongoDb := server.mongo.Database(util.MONGO_DATA_BASE)
 	categoryCollection := apiMongoDb.Collection("category")
 
-	result, err := categoryCollection.UpdateByID(context.TODO(), bson.M{"_id": req.Id}, category)
+	result, err := categoryCollection.UpdateOne(context.TODO(), filter, update)
 
 	if err != nil {
 		util.SendInternalServerError(ctx)
+		fmt.Println(err.Error())
 		return
 	}
 	util.SendApiSuccess(ctx, result, "")

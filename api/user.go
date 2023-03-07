@@ -62,7 +62,12 @@ func (server *Server) UserRegister(ctx *gin.Context) {
 		return
 	}
 
-	util.SendApiSuccess(ctx, user, "")
+	userMap := make(map[string]string)
+	userMap["username"] = user.Username
+	userMap["fullName"] = user.FullName
+	userMap["email"] = user.Email
+
+	util.SendApiSuccess(ctx, userMap, "")
 }
 
 type loginRequest struct {
