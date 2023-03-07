@@ -1,0 +1,34 @@
+version: '3.1'
+
+volumes:
+  dbdata: # create the volume for persisting data
+
+networks:
+  go_api_network:
+    driver: bridge
+
+services:
+  db:
+    container_name: HuuNam_db
+    image: postgres:latest
+    restart: always
+    volumes:
+      - dbdata:/var/lib/postgresql/data
+    ports:
+      - "5431:5431"
+    environment:
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: pass123
+      POSTGRES_DB: simple_bank_test
+    networks:
+      - go_api_network
+  
+  go_api:
+    build:
+      context: .
+    ports:
+      - "8000:8000"
+    networks:
+      - go_api_network
+    depends_on:
+      - "db"
