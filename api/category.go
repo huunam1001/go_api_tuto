@@ -2,6 +2,7 @@ package api
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"go_api_tuto/db/mongo"
 	"go_api_tuto/util"
@@ -11,6 +12,42 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
+
+func (server *Server) GetListCategory(ctx *gin.Context) {
+
+	apiMongoDb := server.mongo.Database(util.MONGO_DATA_BASE)
+	categoryCollection := apiMongoDb.Collection("category")
+
+	filter := bson.M{}
+
+	cursor, err := categoryCollection.Find(context.TODO(), filter)
+
+	if err != nil {
+
+		print(err.Error())
+		util.SendValidationError(ctx)
+
+		return
+	}
+
+	var results []mongo.Category
+	if err = cursor.All(context.TODO(), &results); err != nil {
+
+		util.SendInternalServerError(ctx)
+		return
+	}
+
+	for _, result := range results {
+		cursor.Decode(&result)
+		_, err := json.MarshalIndent(result, "", "    ")
+		if err != nil {
+			panic(err)
+		}
+		// fmt.Printf("%s\n", output)
+	}
+
+	util.SendApiSuccess(ctx, results, "")
+}
 
 type createCategoryRequest struct {
 	Name string `json:"name" binding:"required"`
