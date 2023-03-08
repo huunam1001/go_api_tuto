@@ -10,7 +10,6 @@ import (
 	"github.com/gin-gonic/gin"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
-	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
@@ -108,14 +107,24 @@ func (server *Server) AddProduct(ctx *gin.Context) {
 		return
 	}
 
-	_, err = productCollection.Indexes().CreateOne(context.Background(), mongo.IndexModel{
-		Keys: bson.M{"name": "text"},
-	})
+	// _, err = productCollection.Indexes().CreateOne(context.Background(), mongo.IndexModel{
+	// 	Keys: bson.M{"name": "text"},
+	// })
 
-	if err != nil {
-		println("ERROR INDEX")
-		println(err.Error())
-	}
+	// if err != nil {
+	// 	println("ERROR INDEX")
+	// 	println(err.Error())
+	// }
+
+	// testX := bson.M{"name": "product_search", "mappings": bson.M{"dynamic": true}}
+
+	testX := bson.D{{Key: "name", Value: "product_search"}}
+
+	a := productCollection.Database().RunCommand(context.Background(), testX)
+
+	print("a %v \n", a)
+	print("ERROR")
+	print(a.Err().Error())
 
 	util.SendApiSuccess(ctx, result, "")
 }
