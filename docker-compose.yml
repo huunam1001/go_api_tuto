@@ -19,7 +19,7 @@ services:
     environment:
       POSTGRES_USER: root
       POSTGRES_PASSWORD: pass123
-      POSTGRES_DB: simple_bank_test
+      POSTGRES_DB: simple_bank
     networks:
       - go_api_network
   

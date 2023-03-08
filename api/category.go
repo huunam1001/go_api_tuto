@@ -3,7 +3,7 @@ package api
 import (
 	"context"
 	"encoding/json"
-	"go_api_tuto/db/mongo"
+	"go_api_tuto/db/mongodb"
 	"go_api_tuto/util"
 	"time"
 
@@ -29,7 +29,7 @@ func (server *Server) GetListCategory(ctx *gin.Context) {
 		return
 	}
 
-	var results []mongo.Category
+	var results []mongodb.Category
 	if err := cursor.All(context.TODO(), &results); err != nil {
 
 		util.SendInternalServerError(ctx)
@@ -71,7 +71,7 @@ func (server *Server) AddCategory(ctx *gin.Context) {
 		return
 	}
 
-	category := mongo.Category{
+	category := mongodb.Category{
 		Name:        req.Name,
 		CreatedTime: primitive.NewDateTimeFromTime(time.Now()),
 		UpdatedTime: primitive.NewDateTimeFromTime(time.Now()),
@@ -92,7 +92,7 @@ func (server *Server) AddCategory(ctx *gin.Context) {
 
 	filter := bson.M{"_id": bson.M{"$eq": result.InsertedID}}
 
-	var getCatetory mongo.Category
+	var getCatetory mongodb.Category
 	categoryCollection.FindOne(context.TODO(), filter).Decode(&getCatetory)
 
 	util.SendApiSuccess(ctx, getCatetory, "")
@@ -131,7 +131,7 @@ func (server *Server) UpdateCategory(ctx *gin.Context) {
 
 	filter := bson.M{"_id": bson.M{"$eq": categoryId}}
 
-	category := mongo.Category{
+	category := mongodb.Category{
 		Name:        req.Name,
 		UpdatedTime: primitive.NewDateTimeFromTime(time.Now()),
 		UpdatedBy:   me.Username,
@@ -150,7 +150,7 @@ func (server *Server) UpdateCategory(ctx *gin.Context) {
 		return
 	}
 
-	var getCatetory mongo.Category
+	var getCatetory mongodb.Category
 	categoryCollection.FindOne(context.TODO(), filter).Decode(&getCatetory)
 
 	util.SendApiSuccess(ctx, getCatetory, "")
@@ -188,7 +188,7 @@ func (server *Server) DeleteCategory(ctx *gin.Context) {
 
 	filter := bson.M{"_id": bson.M{"$eq": categoryId}}
 
-	category := mongo.Category{
+	category := mongodb.Category{
 		UpdatedTime: primitive.NewDateTimeFromTime(time.Now()),
 		UpdatedBy:   me.Username,
 		DeletedBy:   me.Username,

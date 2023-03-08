@@ -3,13 +3,14 @@ package api
 import (
 	"context"
 	"encoding/json"
-	"go_api_tuto/db/mongo"
+	"go_api_tuto/db/mongodb"
 	"go_api_tuto/util"
 	"time"
 
 	"github.com/gin-gonic/gin"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
+	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
@@ -21,6 +22,10 @@ func (server *Server) GetListProduct(ctx *gin.Context) {
 	productCollection := apiMongoDb.Collection("product")
 
 	filter := bson.M{"name": bson.M{"$regex": search, "$options": "i"}}
+	if len(search) > 0 {
+
+		filter = bson.M{"$text": bson.M{"$search": search}}
+	}
 
 	options := new(options.FindOptions)
 	options.SetSkip(0)
@@ -30,7 +35,7 @@ func (server *Server) GetListProduct(ctx *gin.Context) {
 
 	cursor, err := productCollection.Find(context.TODO(), filter, options)
 
-	var results []mongo.Product
+	var results []mongodb.Product
 	if err = cursor.All(context.TODO(), &results); err != nil {
 		util.SendInternalServerError(ctx)
 		return
@@ -45,7 +50,6 @@ func (server *Server) GetListProduct(ctx *gin.Context) {
 		if err != nil {
 			panic(err)
 		}
-		// fmt.Printf("%s\n", output)
 	}
 
 	util.SendApiSuccess(ctx, results, "")
@@ -83,7 +87,7 @@ func (server *Server) AddProduct(ctx *gin.Context) {
 		return
 	}
 
-	product := mongo.Product{
+	product := mongodb.Product{
 		CategoryId:  categoryId,
 		Name:        req.Name,
 		Price:       req.Price,
@@ -102,6 +106,15 @@ func (server *Server) AddProduct(ctx *gin.Context) {
 	if err != nil {
 		util.SendInternalServerError(ctx)
 		return
+	}
+
+	_, err = productCollection.Indexes().CreateOne(context.Background(), mongo.IndexModel{
+		Keys: bson.M{"name": "text"},
+	})
+
+	if err != nil {
+		println("ERROR INDEX")
+		println(err.Error())
 	}
 
 	util.SendApiSuccess(ctx, result, "")
