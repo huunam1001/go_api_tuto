@@ -16,19 +16,24 @@ func (server *Server) GetListProduct(ctx *gin.Context) {
 
 	search := ctx.Query("search")
 
+	page, limit := util.GetPagingFromRequest(ctx)
+
+	println(limit)
+	println(page)
+
 	apiMongoDb := server.mongo.Database(util.MONGO_DATA_BASE)
 	productCollection := apiMongoDb.Collection("product")
 
-	// filter := bson.M{"name": bson.M{"$regex": search, "$options": "i"}}
-	// if len(search) > 0 {
-
-	// 	filter = bson.M{"$text": bson.M{"$search": search}}
-	// }
-
-	// filter := bson.A{"$match", {bson.D{"$text", bson.D{"$search", "Nike"}}}}
-
 	filter := bson.A{
-		bson.D{{Key: "$match", Value: bson.D{{Key: "$text", Value: bson.D{{Key: "$search", Value: search}}}}}},
+		bson.D{
+			{Key: "$match", Value: bson.D{
+				{Key: "$text", Value: bson.D{
+					{Key: "$search", Value: search},
+				},
+				},
+			},
+			},
+		},
 		bson.D{
 			{Key: "$lookup",
 				Value: bson.D{
@@ -36,6 +41,25 @@ func (server *Server) GetListProduct(ctx *gin.Context) {
 					{Key: "localField", Value: "categoryId"},
 					{Key: "foreignField", Value: "_id"},
 					{Key: "as", Value: "category"},
+				},
+			},
+		},
+		bson.D{
+			{Key: "$facet",
+				Value: bson.D{
+					{Key: "paging",
+						Value: bson.A{
+							bson.D{{Key: "$count", Value: "total"}},
+							bson.D{{Key: "$addFields", Value: bson.D{{Key: "page", Value: page}}}},
+							bson.D{{Key: "$addFields", Value: bson.D{{Key: "limit", Value: limit}}}},
+						},
+					},
+					{Key: "products",
+						Value: bson.A{
+							bson.D{{Key: "$skip", Value: page * limit}},
+							bson.D{{Key: "$limit", Value: limit}},
+						},
+					},
 				},
 			},
 		},
@@ -48,7 +72,7 @@ func (server *Server) GetListProduct(ctx *gin.Context) {
 		return
 	}
 
-	var results []mongodb.Product
+	var results []mongodb.MongGoListProductResponse
 	if err = cursor.All(context.TODO(), &results); err != nil {
 		util.SendInternalServerError(ctx)
 		return

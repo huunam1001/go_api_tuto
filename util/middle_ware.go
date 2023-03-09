@@ -2,6 +2,7 @@ package util
 
 import (
 	"encoding/json"
+	"fmt"
 	"strings"
 
 	"github.com/gin-gonic/gin"
@@ -83,4 +84,26 @@ func GetUserFromRequest(c *gin.Context) (*LoginData, bool) {
 	} else {
 		return nil, false
 	}
+}
+
+func GetPagingFromRequest(c *gin.Context) (int, int) {
+	getPage := c.Query("page")
+	getLimit := c.Query("limit")
+
+	page := 0
+	limit := 10
+
+	fmt.Sscan(getPage, &page)
+
+	if page < 0 {
+		page = 0
+	}
+
+	fmt.Sscan(getLimit, &limit)
+
+	if limit < 0 {
+		limit = 10
+	}
+
+	return page, limit
 }
