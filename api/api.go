@@ -6,6 +6,7 @@ import (
 	"go_api_tuto/util"
 
 	"github.com/gin-gonic/gin"
+	"github.com/go-redis/redis"
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
@@ -13,9 +14,10 @@ type Server struct {
 	store  db.Store
 	router *gin.Engine
 	mongo  *mongo.Client
+	redis  *redis.Client
 }
 
-func NewServer(store db.Store, mongoDb *mongo.Client) Server {
+func NewServer(store db.Store, mongoDb *mongo.Client, redis *redis.Client) Server {
 
 	sever := &Server{
 		store: store,

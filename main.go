@@ -8,11 +8,12 @@ import (
 	"go_api_tuto/util"
 	"time"
 
+	"log"
+
+	"github.com/go-redis/redis"
 	_ "github.com/lib/pq"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
-
-	"log"
 )
 
 func main() {
@@ -56,11 +57,18 @@ func main() {
 
 	store := db.NewStore(postgresql)
 
-	server := api.NewServer(store, mongoClient)
+	redis := redis.NewClient(&redis.Options{
+		Addr:     "localhost:6379",
+		Password: "", // no password set
+		DB:       0,  // use default DB
+	})
+
+	server := api.NewServer(store, mongoClient, redis)
 
 	errServer := server.Start(config.SeverAddress)
 
 	if errServer != nil {
 		log.Fatal("Could not start server: ,", errServer)
 	}
+
 }
