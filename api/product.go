@@ -10,7 +10,6 @@ import (
 	"github.com/gin-gonic/gin"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
-	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 func (server *Server) GetListProduct(ctx *gin.Context) {
@@ -20,28 +19,40 @@ func (server *Server) GetListProduct(ctx *gin.Context) {
 	apiMongoDb := server.mongo.Database(util.MONGO_DATA_BASE)
 	productCollection := apiMongoDb.Collection("product")
 
-	filter := bson.M{"name": bson.M{"$regex": search, "$options": "i"}}
-	if len(search) > 0 {
+	// filter := bson.M{"name": bson.M{"$regex": search, "$options": "i"}}
+	// if len(search) > 0 {
 
-		filter = bson.M{"$text": bson.M{"$search": search}}
+	// 	filter = bson.M{"$text": bson.M{"$search": search}}
+	// }
+
+	// filter := bson.A{"$match", {bson.D{"$text", bson.D{"$search", "Nike"}}}}
+
+	filter := bson.A{
+		bson.D{{Key: "$match", Value: bson.D{{Key: "$text", Value: bson.D{{Key: "$search", Value: search}}}}}},
+		bson.D{
+			{Key: "$lookup",
+				Value: bson.D{
+					{Key: "from", Value: "category"},
+					{Key: "localField", Value: "categoryId"},
+					{Key: "foreignField", Value: "_id"},
+					{Key: "as", Value: "category"},
+				},
+			},
+		},
 	}
 
-	options := new(options.FindOptions)
-	options.SetSkip(0)
-	options.SetLimit(10)
+	cursor, err := productCollection.Aggregate(ctx, filter)
 
-	total, _ := productCollection.CountDocuments(context.TODO(), filter)
-
-	cursor, err := productCollection.Find(context.TODO(), filter, options)
+	if err != nil {
+		println(err.Error())
+		return
+	}
 
 	var results []mongodb.Product
 	if err = cursor.All(context.TODO(), &results); err != nil {
 		util.SendInternalServerError(ctx)
 		return
 	}
-
-	println("PAGE COUNT")
-	println(total)
 
 	for _, result := range results {
 		cursor.Decode(&result)
@@ -115,16 +126,6 @@ func (server *Server) AddProduct(ctx *gin.Context) {
 	// 	println("ERROR INDEX")
 	// 	println(err.Error())
 	// }
-
-	// testX := bson.M{"name": "product_search", "mappings": bson.M{"dynamic": true}}
-
-	testX := bson.D{{Key: "name", Value: "product_search"}}
-
-	a := productCollection.Database().RunCommand(context.Background(), testX)
-
-	print("a %v \n", a)
-	print("ERROR")
-	print(a.Err().Error())
 
 	util.SendApiSuccess(ctx, result, "")
 }
