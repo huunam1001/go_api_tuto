@@ -4,8 +4,10 @@ import (
 	"encoding/json"
 	"fmt"
 	"strings"
+	"time"
 
 	"github.com/gin-gonic/gin"
+	"github.com/go-redis/redis"
 )
 
 type TokenLogin struct {
@@ -83,6 +85,16 @@ func GetUserFromRequest(c *gin.Context) (*LoginData, bool) {
 		}, true
 	} else {
 		return nil, false
+	}
+}
+
+func SaveRedisToken(redis *redis.Client, key string, value interface{}) {
+
+	print("WRITE REDIS")
+	t := redis.Set(key, value, time.Duration(time.Hour*24*365*10))
+
+	if t != nil {
+		print(t.Err().Error())
 	}
 }
 

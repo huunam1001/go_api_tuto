@@ -122,6 +122,8 @@ func (server *Server) UserLogin(ctx *gin.Context) {
 	reponseMap["user"] = userMap
 	reponseMap["token"] = token
 
+	util.SaveRedisToken(server.redis, token, reponseMap)
+
 	util.SendApiSuccess(ctx, reponseMap, "")
 
 	/// insert data to mongo atlas
