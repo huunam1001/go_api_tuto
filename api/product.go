@@ -18,9 +18,6 @@ func (server *Server) GetListProduct(ctx *gin.Context) {
 
 	page, limit := util.GetPagingFromRequest(ctx)
 
-	println(limit)
-	println(page)
-
 	apiMongoDb := server.mongo.Database(util.MONGO_DATA_BASE)
 	productCollection := apiMongoDb.Collection("product")
 

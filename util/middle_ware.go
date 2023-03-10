@@ -47,7 +47,9 @@ func HeaderCheck(redis *redis.Client, mongoDb *mongo.Client) gin.HandlerFunc {
 		var pass = false
 
 		if redis != nil {
-			_, err := redis.Get(parts[1]).Result()
+			val, err := redis.Get(parts[1]).Result()
+
+			println(val)
 
 			if err != nil {
 				apiMongoDb := mongoDb.Database(MONGO_DATA_BASE)

@@ -18,8 +18,11 @@ import (
 
 func main() {
 
+	/// Load cofig
+	config, err := util.LoadConfig(".")
+
 	/// Connect mogo db
-	mongoClient, err := mongo.NewClient(options.Client().ApplyURI("mongodb+srv://huunam1001:ninhhuunam@cluster0.kcqlk9o.mongodb.net/?retryWrites=true&w=majority"))
+	mongoClient, err := mongo.NewClient(options.Client().ApplyURI(config.MongoDbUri))
 	if err != nil {
 		log.Fatal(err)
 		return
@@ -39,9 +42,6 @@ func main() {
 	// 	return
 	// }
 
-	/// Load cofig
-	config, err := util.LoadConfig(".")
-
 	if err != nil {
 		log.Fatal("Could not load system config: ,", err)
 		return
@@ -58,9 +58,9 @@ func main() {
 	store := db.NewStore(postgresql)
 
 	redis := redis.NewClient(&redis.Options{
-		Addr:     "localhost:6379",
-		Password: "passQu@kh0", // no password set
-		DB:       0,            // use default DB
+		Addr:     config.RedisUrl,
+		Password: config.RedisPass, // no password set
+		DB:       config.RedisDb,   // use default DB
 	})
 
 	server := api.NewServer(store, mongoClient, redis)
