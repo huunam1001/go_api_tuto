@@ -24,7 +24,7 @@ type LoginData struct {
 	FullName string `json:"fullName"`
 }
 
-func HeaderCheck() gin.HandlerFunc {
+func HeaderCheck(redis *redis.Client, mongoDb *mongo.Client) gin.HandlerFunc {
 
 	return func(c *gin.Context) {
 
@@ -40,6 +40,19 @@ func HeaderCheck() gin.HandlerFunc {
 			c.Abort()
 
 			return
+		}
+
+		if redis != nil {
+			val, err := redis.Get(parts[1]).Result()
+
+			if err != nil {
+				SendApiError(c, ERROR_LOGIN_TOKEN, "Error login token")
+
+				c.Abort()
+				return
+			} else {
+				print(val)
+			}
 		}
 
 		tokenMap, success := ExtractClaims(parts[1])

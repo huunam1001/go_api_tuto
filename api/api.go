@@ -33,7 +33,7 @@ func NewServer(store db.Store, mongoDb *mongo.Client, redis *redis.Client) Serve
 		nonAuthGroup.POST("/user/login", sever.UserLogin)
 	}
 
-	authGroup := router.Group(util.API_GROUPING, util.HeaderCheck())
+	authGroup := router.Group(util.API_GROUPING, util.HeaderCheck(sever.redis, sever.mongo))
 	{
 		/// add middle ware here
 
