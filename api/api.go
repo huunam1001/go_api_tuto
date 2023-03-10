@@ -22,6 +22,7 @@ func NewServer(store db.Store, mongoDb *mongo.Client, redis *redis.Client) Serve
 	sever := &Server{
 		store: store,
 		mongo: mongoDb,
+		redis: redis,
 	}
 
 	router := gin.Default()

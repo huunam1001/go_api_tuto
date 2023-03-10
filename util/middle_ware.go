@@ -90,11 +90,12 @@ func GetUserFromRequest(c *gin.Context) (*LoginData, bool) {
 
 func SaveRedisToken(redis *redis.Client, key string, value interface{}) {
 
-	print("WRITE REDIS")
-	t := redis.Set(key, value, time.Duration(time.Hour*24*365*10))
+	if redis != nil {
+		write := redis.Set(key, value, time.Duration(time.Hour*24*365*10))
 
-	if t != nil {
-		print(t.Err().Error())
+		if write != nil {
+			print(write.Err().Error())
+		}
 	}
 }
 
