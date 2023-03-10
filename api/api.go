@@ -49,8 +49,6 @@ func NewServer(store db.Store, mongoDb *mongo.Client, redis *redis.Client) Serve
 		authGroup.POST("/product/create", sever.AddProduct)
 	}
 
-	// router.GET("/user/me", sever.GetMe)
-
 	sever.router = router
 
 	return *sever

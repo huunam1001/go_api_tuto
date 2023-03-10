@@ -5,8 +5,10 @@ import (
 	"fmt"
 	db "go_api_tuto/db/sqlc"
 	"go_api_tuto/util"
+	"time"
 
 	"github.com/gin-gonic/gin"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 type createUserRequest struct {
@@ -121,22 +123,11 @@ func (server *Server) UserLogin(ctx *gin.Context) {
 	reponseMap := make(map[string]any)
 	reponseMap["user"] = userMap
 	reponseMap["token"] = token
-
-	util.SaveRedisToken(server.redis, token, reponseMap)
+	reponseMap["loginDate"] = primitive.NewDateTimeFromTime(time.Now())
 
 	util.SendApiSuccess(ctx, reponseMap, "")
 
-	/// insert data to mongo atlas
-	apiMongoDb := server.mongo.Database(util.MONGO_DATA_BASE)
-	tokenCollection := apiMongoDb.Collection(util.MONGO_TOKEN_COLLECTION)
-
-	result, err := tokenCollection.InsertOne(ctx, reponseMap)
-
-	if err != nil {
-		fmt.Printf("Error: %s\n", err.Error())
-	} else {
-		fmt.Printf("DATA ID: %s\n", result.InsertedID)
-	}
+	util.SaveLoginToken(server.redis, server.mongo, token, reponseMap)
 }
 
 func (server *Server) GetMe(ctx *gin.Context) {

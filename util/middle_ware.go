@@ -1,6 +1,7 @@
 package util
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"strings"
@@ -8,6 +9,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/go-redis/redis"
+	"go.mongodb.org/mongo-driver/mongo"
 )
 
 type TokenLogin struct {
@@ -88,13 +90,27 @@ func GetUserFromRequest(c *gin.Context) (*LoginData, bool) {
 	}
 }
 
-func SaveRedisToken(redis *redis.Client, key string, value interface{}) {
+func SaveLoginToken(redis *redis.Client, mongoDb *mongo.Client, key string, value interface{}) {
 
 	if redis != nil {
 		write := redis.Set(key, value, time.Duration(time.Hour*24*365*10))
 
 		if write != nil {
 			print(write.Err().Error())
+		}
+	}
+
+	if mongoDb != nil {
+		/// insert data to mongo atlas
+		apiMongoDb := mongoDb.Database(MONGO_DATA_BASE)
+		tokenCollection := apiMongoDb.Collection(MONGO_TOKEN_COLLECTION)
+
+		result, err := tokenCollection.InsertOne(context.Background(), value)
+
+		if err != nil {
+			fmt.Printf("Error: %s\n", err.Error())
+		} else {
+			fmt.Printf("DATA ID: %s\n", result.InsertedID)
 		}
 	}
 }
