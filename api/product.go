@@ -68,7 +68,7 @@ func (server *Server) GetListProduct(ctx *gin.Context) {
 	cursor, err := productCollection.Aggregate(ctx, filter)
 
 	if err != nil {
-		println(err.Error())
+		util.SendInternalServerError(ctx)
 		return
 	}
 

@@ -59,8 +59,8 @@ func main() {
 
 	redis := redis.NewClient(&redis.Options{
 		Addr:     "localhost:6379",
-		Password: "", // no password set
-		DB:       0,  // use default DB
+		Password: "passQu@kh0", // no password set
+		DB:       0,            // use default DB
 	})
 
 	server := api.NewServer(store, mongoClient, redis)

@@ -3,6 +3,7 @@ package api
 import (
 	"database/sql"
 	"fmt"
+	"go_api_tuto/db/mongodb"
 	db "go_api_tuto/db/sqlc"
 	"go_api_tuto/util"
 	"time"
@@ -108,26 +109,38 @@ func (server *Server) UserLogin(ctx *gin.Context) {
 		return
 	}
 
-	userMap := make(map[string]string)
-	userMap["username"] = user.Username
-	userMap["fullName"] = user.FullName
-	userMap["email"] = user.Email
+	// userMap := make(map[string]string)
+	// userMap["username"] = user.Username
+	// userMap["fullName"] = user.FullName
+	// userMap["email"] = user.Email
 
-	token, err := util.GenerateJWT(userMap)
+	userToken := mongodb.TokenUserInfo{
+		Username: user.Username,
+		Email:    user.Email,
+		FullName: user.FullName,
+	}
+
+	token, err := util.GenerateJWT(userToken)
 
 	if err != nil || len(token) == 0 {
 
 		util.SendInternalServerError(ctx)
 	}
 
-	reponseMap := make(map[string]any)
-	reponseMap["user"] = userMap
-	reponseMap["token"] = token
-	reponseMap["loginDate"] = primitive.NewDateTimeFromTime(time.Now())
+	loginTokenInfo := mongodb.LoginTokenInfo{
+		Token:     token,
+		LoginDate: primitive.NewDateTimeFromTime(time.Now()),
+		User:      userToken,
+	}
 
-	util.SendApiSuccess(ctx, reponseMap, "")
+	// reponseMap := make(map[string]any)
+	// reponseMap["user"] = userMap
+	// reponseMap["token"] = token
+	// reponseMap["loginDate"] = primitive.NewDateTimeFromTime(time.Now())
 
-	util.SaveLoginToken(server.redis, server.mongo, token, reponseMap)
+	util.SendApiSuccess(ctx, loginTokenInfo, "")
+
+	util.SaveLoginToken(server.redis, server.mongo, token, loginTokenInfo)
 }
 
 func (server *Server) GetMe(ctx *gin.Context) {

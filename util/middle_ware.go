@@ -4,11 +4,13 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"go_api_tuto/db/mongodb"
 	"strings"
 	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/go-redis/redis"
+	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
@@ -42,17 +44,38 @@ func HeaderCheck(redis *redis.Client, mongoDb *mongo.Client) gin.HandlerFunc {
 			return
 		}
 
+		var pass = false
+
 		if redis != nil {
-			val, err := redis.Get(parts[1]).Result()
+			_, err := redis.Get(parts[1]).Result()
 
 			if err != nil {
-				SendApiError(c, ERROR_LOGIN_TOKEN, "Error login token")
+				apiMongoDb := mongoDb.Database(MONGO_DATA_BASE)
+				tokenCollection := apiMongoDb.Collection(MONGO_TOKEN_COLLECTION)
 
-				c.Abort()
-				return
+				filter := bson.D{{Key: "token", Value: parts[1]}}
+
+				var result mongodb.LoginTokenInfo
+				err = tokenCollection.FindOne(context.TODO(), filter).Decode(&result)
+
+				if err == nil {
+					/// Save token again to redis
+					redis.Set(parts[1], parts[1], time.Duration(time.Hour*24*365*10))
+
+					pass = true
+				}
+
 			} else {
-				print(val)
+				pass = true
 			}
+		}
+
+		if !pass {
+
+			SendApiError(c, ERROR_LOGIN_TOKEN, "Error login token")
+
+			c.Abort()
+			return
 		}
 
 		tokenMap, success := ExtractClaims(parts[1])
@@ -106,11 +129,7 @@ func GetUserFromRequest(c *gin.Context) (*LoginData, bool) {
 func SaveLoginToken(redis *redis.Client, mongoDb *mongo.Client, key string, value interface{}) {
 
 	if redis != nil {
-		write := redis.Set(key, key, time.Duration(time.Hour*24*365*10))
-
-		if write != nil {
-			print(write.Err().Error())
-		}
+		redis.Set(key, key, time.Duration(time.Hour*24*365*10))
 	}
 
 	if mongoDb != nil {
@@ -118,13 +137,7 @@ func SaveLoginToken(redis *redis.Client, mongoDb *mongo.Client, key string, valu
 		apiMongoDb := mongoDb.Database(MONGO_DATA_BASE)
 		tokenCollection := apiMongoDb.Collection(MONGO_TOKEN_COLLECTION)
 
-		result, err := tokenCollection.InsertOne(context.Background(), value)
-
-		if err != nil {
-			fmt.Printf("Error: %s\n", err.Error())
-		} else {
-			fmt.Printf("DATA ID: %s\n", result.InsertedID)
-		}
+		tokenCollection.InsertOne(context.Background(), value)
 	}
 }
 

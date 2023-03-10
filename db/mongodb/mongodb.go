@@ -2,6 +2,19 @@ package mongodb
 
 import "go.mongodb.org/mongo-driver/bson/primitive"
 
+type TokenUserInfo struct {
+	Username string `bson:"username,omitempty" json:"username"`
+	FullName string `bson:"fullName,omitempty" json:"fullName"`
+	Email    string `bson:"email,omitempty" json:"email"`
+}
+
+type LoginTokenInfo struct {
+	ID        *primitive.ObjectID `bson:"_id,omitempty" json:"id,omitempty"`
+	Token     string              `bson:"token,omitempty" json:"token"`
+	LoginDate primitive.DateTime  `bson:"loginDate,omitempty" json:"loginDate"`
+	User      TokenUserInfo       `bson:"user,omitempty" json:"user"`
+}
+
 type Category struct {
 	ID          primitive.ObjectID `bson:"_id,omitempty" json:"id"`
 	Name        string             `bson:"name,omitempty" json:"name"`
