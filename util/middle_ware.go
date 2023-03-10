@@ -93,7 +93,7 @@ func GetUserFromRequest(c *gin.Context) (*LoginData, bool) {
 func SaveLoginToken(redis *redis.Client, mongoDb *mongo.Client, key string, value interface{}) {
 
 	if redis != nil {
-		write := redis.Set(key, value, time.Duration(time.Hour*24*365*10))
+		write := redis.Set(key, key, time.Duration(time.Hour*24*365*10))
 
 		if write != nil {
 			print(write.Err().Error())
