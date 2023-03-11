@@ -42,6 +42,16 @@ func (server *Server) GetListProduct(ctx *gin.Context) {
 			},
 		},
 		bson.D{
+			{Key: "$project",
+				Value: bson.D{
+					{Key: "name", Value: 1},
+					{Key: "categoryId", Value: 1},
+					{Key: "price", Value: 1},
+					{Key: "category", Value: bson.D{{Key: "$first", Value: "$category"}}},
+				},
+			},
+		},
+		bson.D{
 			{Key: "$facet",
 				Value: bson.D{
 					{Key: "paging",
@@ -60,11 +70,20 @@ func (server *Server) GetListProduct(ctx *gin.Context) {
 				},
 			},
 		},
+		bson.D{
+			{Key: "$project",
+				Value: bson.D{
+					{Key: "products", Value: 1},
+					{Key: "paging", Value: bson.D{{Key: "$first", Value: "$paging"}}},
+				},
+			},
+		},
 	}
 
 	cursor, err := productCollection.Aggregate(ctx, filter)
 
 	if err != nil {
+		println(err.Error())
 		util.SendInternalServerError(ctx)
 		return
 	}
